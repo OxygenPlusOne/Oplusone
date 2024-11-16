@@ -1,0 +1,26 @@
+import os
+from openai import OpenAI
+
+# 初始化客户端
+client = OpenAI(
+    api_key='sk-b58dae89812d4ac387ab549940d6ce9f',
+    base_url="https://dashscope.aliyuncs.com/compatible-mode/v1"
+)
+conversation_history = [
+    {'role': 'system', 'content': 'You are a helpful assistant.'}]
+while True:
+    user_input = input()
+    if'结束' in user_input:
+        print("感谢您的咨询，再见")
+        break
+    conversation_history.append({'role': 'user', 'content': user_input})
+    completion = client.chat.completions.create(
+        model="qwen-plus",
+        messages=conversation_history,
+        stream=True
+        )
+    full_reply = ""
+    for chunk in completion:
+        full_reply += chunk.choices[0].delta.content
+        print(chunk.choices[0].delta.content)
+    print(f"完整内容为：{full_reply}")
